@@ -33,8 +33,13 @@ except ImportError:  # thonny 3 package layout
 # https://github.com/tabreturn/thonny-py5mode-tkcolorpicker
 # hopefully, pull-request is accepted so this can install via pypi
 from .py5colorpicker.tkcolorpicker import askcolor
-
-
+try:
+    import py5_tools
+    converters_available = True
+except ImportError:
+    converters_available = False
+    
+    
 _PY5_IMPORTED_MODE = 'run.py5_imported_mode'
 
 
@@ -174,6 +179,15 @@ def convert_code(translator) -> None:
         current_editor._load_file(current_file, keep_undo=True)
         showinfo('py5 Conversion', 'Conversion complete', master=workbench)
 
+def convert_imported_to_module() -> None:
+    convert_code(py5_tools.translators.imported2module)
+
+def convert_module_to_imported() -> None:
+    convert_code(py5_tools.translators.module2imported)
+
+def convert_processingpy_to_imported() -> None:
+    convert_code(py5_tools.translators.processingpy2imported)
+
 
 def patched_handle_program_output(self, msg: BackendEvent) -> None:
     '''catch display window movements and write coords to the config file'''
@@ -263,6 +277,29 @@ def load_plugin() -> None:
       group=40,
       default_sequence='<Control-Alt-k>'
     )
+    if converters_available:
+        get_workbench().add_command(
+          'convert_processingpy_to_imported',
+          'py5',
+          tr('Convert Py.Processing code to py5 imported mode'),
+          convert_processingpy_to_imported,
+          group=45,
+        )
+        get_workbench().add_command(
+          'convert_module_to_imported',
+          'py5',
+          tr('Convert py5 module mode code to imported mode'),
+          convert_module_to_imported,
+          group=45,
+        )
+        get_workbench().add_command(
+          'convert_imported_to_module',
+          'py5',
+          tr('Convert py5 imported mode code to module mode'),
+          convert_imported_to_module,
+          group=45,
+        )
+    
     add_about_py5mode_command(50)
     patch_token_coloring()
     set_py5_imported_mode()
