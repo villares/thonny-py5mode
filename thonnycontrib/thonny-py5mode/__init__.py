@@ -177,16 +177,7 @@ def convert_code(translator) -> None:
         current_editor.save_file()
         translator.translate_file(current_file, current_file)
         current_editor._load_file(current_file, keep_undo=True)
-        showinfo('py5 Conversion', 'Conversion complete', master=workbench)
-
-def convert_imported_to_module() -> None:
-    convert_code(py5_tools.translators.imported2module)
-
-def convert_module_to_imported() -> None:
-    convert_code(py5_tools.translators.module2imported)
-
-def convert_processingpy_to_imported() -> None:
-    convert_code(py5_tools.translators.processingpy2imported)
+        showinfo('py5 Conversion', 'Conversion attempted, please review and adjust as necessary!', master=workbench)
 
 
 def patched_handle_program_output(self, msg: BackendEvent) -> None:
@@ -229,8 +220,9 @@ def show_sketch_folder() -> None:
 
 
 def load_plugin() -> None:
+    wb = get_workbench()
     get_workbench().set_default(_PY5_IMPORTED_MODE, False)
-    get_workbench().add_command(
+    wb.add_command(
       'toggle_py5_imported_mode',
       'py5',
       tr('Imported mode for py5'),
@@ -238,14 +230,14 @@ def load_plugin() -> None:
       flag_name=_PY5_IMPORTED_MODE,
       group=10
     )
-    get_workbench().add_command(
+    wb.add_command(
       'apply_recommended_py5_config',
       'py5',
       tr('Apply recommended py5 settings'),
       apply_recommended_py5_config,
       group=20
     )
-    get_workbench().add_command(
+    wb.add_command(
       'py5_color_selector',
       'py5',
       tr('Color selector'),
@@ -253,7 +245,7 @@ def load_plugin() -> None:
       group=30,
       default_sequence='<Alt-c>'
     )
-    get_workbench().add_command(
+    wb.add_command(
       'py5_reference',
       'py5',
       tr('py5 reference'),
@@ -262,14 +254,14 @@ def load_plugin() -> None:
     )
     git_raw_user = 'https://raw.githubusercontent.com/tabreturn/'
     git_asset_path = 'processing.py-cheat-sheet/master/py5/py5_cc.pdf'
-    get_workbench().add_command(
+    wb.add_command(
       'py5_cheatsheet',
       'py5',
       tr('py5 cheatsheet'),
       lambda: webbrowser.open(git_raw_user + git_asset_path),
       group=30
     )
-    get_workbench().add_command(
+    wb.add_command(
       'open_folder',
       'py5',
       tr('Show sketch folder'),
@@ -278,28 +270,27 @@ def load_plugin() -> None:
       default_sequence='<Control-Alt-k>'
     )
     if converters_available:
-        get_workbench().add_command(
-          'convert_processingpy_to_imported',
+        conversion_tools_menu = tk.Menu(tearoff=0)
+        # items for the menu: py5 > Conversion tools
+        conversion_tools_menu.add_command(
+            label='Processing.py → py5 imported mode',
+            command=lambda: convert_code(py5_tools.translators.processingpy2imported)
+            )
+        conversion_tools_menu.add_command(
+            label='py5 imported mode → module mode',
+            command=lambda: convert_code(py5_tools.translators.imported2module)
+            )
+        conversion_tools_menu.add_command(
+            label='py5 module mode → imported mode',
+            command=lambda: convert_code(py5_tools.translators.module2imported)
+            )
+        wb.add_command(
+          'conversion_tools',
           'py5',
-          tr('Convert Py.Processing code to py5 imported mode'),
-          convert_processingpy_to_imported,
-          group=45,
-        )
-        get_workbench().add_command(
-          'convert_module_to_imported',
-          'py5',
-          tr('Convert py5 module mode code to imported mode'),
-          convert_module_to_imported,
-          group=45,
-        )
-        get_workbench().add_command(
-          'convert_imported_to_module',
-          'py5',
-          tr('Convert py5 imported mode code to module mode'),
-          convert_imported_to_module,
-          group=45,
-        )
-    
+          tr('Conversion helpers'),
+          submenu=conversion_tools_menu,
+          group=40,
+        )    
     add_about_py5mode_command(50)
     patch_token_coloring()
     set_py5_imported_mode()
