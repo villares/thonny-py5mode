@@ -32,7 +32,7 @@ except ImportError:  # thonny 3 package layout
 # modified tkcolorpicker (by j4321) to work with thonny for macos
 # https://github.com/tabreturn/thonny-py5mode-tkcolorpicker
 # hopefully, pull-request is accepted so this can install via pypi
-from .py5colorpicker.tkcolorpicker import askcolor
+from .py5colorpicker.tkcolorpicker import modeless_colorpicker
 try:
     import py5_tools
     converters_available = True
@@ -158,7 +158,7 @@ def toggle_py5_imported_mode() -> None:
 
 def color_selector() -> None:
     '''open tkinter color selector'''
-    pyperclip.copy(str(askcolor(title='Color selector')[1]))
+    pyperclip.copy(str(modeless_colorpicker(title='Color selector')[1]))
 
 
 def convert_code(translator) -> None:
