@@ -163,7 +163,7 @@ def color_selector() -> None:
     # ... if one is not already open
     if not color_selector_open:
         color_selector_open = True
-        askcolor(title=tr('Color selector'))
+        modeless_colorpicker(title=tr('Color selector'))
         color_selector_open = False
 
 
