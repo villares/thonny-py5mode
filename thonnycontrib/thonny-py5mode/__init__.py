@@ -7,7 +7,6 @@ import keyword
 import os
 import pathlib
 import platform
-import pyperclip
 import shutil
 import site
 import subprocess
@@ -31,11 +30,11 @@ except ImportError:  # thonny 3 package layout
     pass
 # modified tkcolorpicker (by j4321) to work with thonny for macos
 # https://github.com/tabreturn/thonny-py5mode-tkcolorpicker
-# hopefully, pull-request is accepted so this can install via pypi
 from .py5colorpicker.tkcolorpicker import askcolor
 
 
 _PY5_IMPORTED_MODE = 'run.py5_imported_mode'
+color_selector_open = False
 
 
 def apply_recommended_py5_config() -> None:
@@ -153,7 +152,12 @@ def toggle_py5_imported_mode() -> None:
 
 def color_selector() -> None:
     '''open tkinter color selector'''
-    pyperclip.copy(str(askcolor(title='Color selector')[1]))
+    global color_selector_open
+    # ... if one is not already open
+    if not color_selector_open:
+        color_selector_open = True
+        askcolor(title=tr('Color selector'))
+        color_selector_open = False
 
 
 def convert_code(translator) -> None:
