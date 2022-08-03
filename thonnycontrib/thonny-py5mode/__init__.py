@@ -273,7 +273,7 @@ def load_plugin() -> None:
       tr('Show sketch folder'),
       show_sketch_folder,
       group=40,
-      default_sequence='<Control-Alt-k>'
+      default_sequence='<Alt-k>'
     )
     if converters_available:
         conversion_tools_menu = tk.Menu(tearoff=0)
